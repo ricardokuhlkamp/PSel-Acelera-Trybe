@@ -1,18 +1,18 @@
 import { RowDataPacket } from 'mysql2';
 import conn from '../database/connection';
-import TransactionsModel from '../interfaces/transactions.interface';
+import Transactions from '../interfaces/transactions.interface';
 import TransactionsList from '../interfaces/transactionsList.interface';
 import { TransactionModelInterface } from '../interfaces/model.interface';
 const DATABASE = 'BancoAcelera';
 
 export default class TransactionModel implements TransactionModelInterface<
-TransactionsModel | TransactionsList
+Transactions | TransactionsList
 > {
     constructor(
         private tableName: string = 'transactions',
         private connection = conn) {}
     
-    async create(transaction: TransactionsModel) {
+    async create(transaction: Transactions) {
         const { originAccountId, destinationAccountId, value, date } = transaction;
         await this.connection.execute(
             `INSERT INTO ${DATABASE}.${this.tableName}(
@@ -40,13 +40,13 @@ TransactionsModel | TransactionsList
         return transictions as TransactionsList[];
     }
     
-    async find(id: number): Promise<TransactionsModel | null> {
+    async find(id: number): Promise<Transactions | null> {
         const result = await this.connection.execute(
           `SELECT id, origin_account_id, destination_account_id, value, date, cashback
           FROM ${DATABASE}.${this.tableName} as C WHERE C.id = ?;`, [ id ]
         );
         const [ transaction ] = result as RowDataPacket[];
-        return transaction[ 0 ] as TransactionsModel;
+        return transaction[ 0 ] as Transactions;
       }
 
 }

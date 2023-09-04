@@ -1,4 +1,4 @@
-export default interface AccountModel {
+export default interface Account {
     id?: number;
     cpfCnpj: string;
     name: string;

@@ -1,4 +1,4 @@
-export default interface TransactionsModel {
+export default interface Transactions {
     id?: number;
     originAccountId: number;
     destinationAccountId: number;
