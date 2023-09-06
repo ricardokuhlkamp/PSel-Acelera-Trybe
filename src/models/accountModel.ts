@@ -9,22 +9,27 @@ export default class AccountModel implements AccountModelInterface<Account> {
         private tableName: string = 'accounts',
         private connection = conn) {}
     
-    async create(account: Account) {
-        const { cpfCnpj, name, email, password, status } = account;
-        await this.connection.execute(
+    async create(account: Account): Promise<number | null> {
+        const { cpfCnpj, name, email, password, balance, status } = account;
+        const [result] = await this.connection.execute(
             `INSERT INTO ${DATABASE}.${this.tableName}(
-                cpf_cnpj, name, email, password, status
+                cpf_cnpj, name, email, password, balance, status
             ) VALUES (?, ?, ?, ?, ?);`,
-            [ cpfCnpj, name, email, password, status ]
+            [ cpfCnpj, name, email, password, balance, status ]
         );
+        if (result && 'insertId' in result) {
+            return result.insertId;
+        } else {
+            return null;
+        }
     }
 
     async update(account: Account) {
-        const { id, cpfCnpj, name, email, password, status } = account;
+        const { id, cpfCnpj, name, email, password, balance, status } = account;
         await this.connection.execute(
             `UPDATE ${DATABASE}.${this.tableName}
-            SET cpf_cnpj = (?), name = (?), email = (?), password = (?), status 
-            WHERE id = (?);`, [ cpfCnpj, name, email, password, status, id ]
+            SET cpf_cnpj = (?), name = (?), email = (?), password = (?), balance = (?), status 
+            WHERE id = (?);`, [ cpfCnpj, name, email, password, balance, status, id ]
         );
     }
 
@@ -39,7 +44,7 @@ export default class AccountModel implements AccountModelInterface<Account> {
     
     async find(id: number): Promise<Account | null> {
         const result = await this.connection.execute(
-          `SELECT id, cpf_cnpj, name, email, password, status
+          `SELECT id, cpf_cnpj, name, email, password, balance, status
           FROM ${DATABASE}.${this.tableName} as C WHERE C.id = ?;`, [ id ]
         );
         const [ casts ] = result as RowDataPacket[];

@@ -4,6 +4,6 @@ export default interface Transactions {
     destinationAccountId: number;
     value: number,
     date: string,
-    cashback: number;
+    cashback?: number;
     created_at: string;    
 }

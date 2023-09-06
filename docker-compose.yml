@@ -2,7 +2,7 @@ version: "3"
 services:
   node:
     build: .
-    container_name: acelera-backend
+    container_name: banco-backend
     tty: true
     stdin_open: true
     command: sh
@@ -14,7 +14,7 @@ services:
       - 3000:3000
     env_file: .env
     environment:
-      MYSQLHOST: acelera_db
+      MYSQLHOST: banco_db
   db:
     image: mysql:8.0.32
     container_name: acelera_db
@@ -26,4 +26,4 @@ services:
       - MYSQL_ROOT_PASSWORD=${MYSQLPASSWORD}
 networks:
   default:
-    name: acelera_net
+    name: banco_net

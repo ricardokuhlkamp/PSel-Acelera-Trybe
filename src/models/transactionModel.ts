@@ -3,7 +3,7 @@ import conn from '../database/connection';
 import Transactions from '../interfaces/transactions.interface';
 import TransactionsList from '../interfaces/transactionsList.interface';
 import { TransactionModelInterface } from '../interfaces/model.interface';
-const DATABASE = 'BancoAcelera';
+const DATABASE = 'bancodb';
 
 export default class TransactionModel implements TransactionModelInterface<
 Transactions | TransactionsList
@@ -12,16 +12,20 @@ Transactions | TransactionsList
         private tableName: string = 'transactions',
         private connection = conn) {}
     
-    async create(transaction: Transactions) {
+    async create(transaction: Transactions): Promise<number | null> {
         const { originAccountId, destinationAccountId, value, date } = transaction;
-        await this.connection.execute(
+        const [result] = await this.connection.execute(
             `INSERT INTO ${DATABASE}.${this.tableName}(
                 origin_account_id, destination_account_id, value, date, 
             ) VALUES (?, ?, ?, ?, ?);`,
             [ originAccountId, destinationAccountId, value, date ]
         );
-    }
- 
+        if (result && 'insertId' in result) {
+            return result.insertId;
+        } else {
+            return null;
+        }
+    } 
 
     async update(id: number, cashback: number) {        
         await this.connection.execute(
@@ -42,7 +46,7 @@ Transactions | TransactionsList
     
     async find(id: number): Promise<Transactions | null> {
         const result = await this.connection.execute(
-          `SELECT id, origin_account_id, destination_account_id, value, date, cashback
+          `SELECT id, origin_account_id, destination_account_id AS accountId, value, date, cashback
           FROM ${DATABASE}.${this.tableName} as C WHERE C.id = ?;`, [ id ]
         );
         const [ transaction ] = result as RowDataPacket[];

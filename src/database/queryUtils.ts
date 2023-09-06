@@ -18,12 +18,9 @@ export async function executeQueries(
   try {
     for (let i=0; i < queries.length; i += 1) {
       const query = queries[i];
-      
       if (query) {
         await conn.query(query);
-      }
-
-      
+      }  
     }
   }
   catch (error) {
