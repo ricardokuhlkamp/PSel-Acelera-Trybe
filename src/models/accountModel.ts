@@ -2,7 +2,7 @@ import { RowDataPacket } from 'mysql2';
 import conn from '../database/connection';
 import Account from '../interfaces/account.interface';
 import { AccountModelInterface } from '../interfaces/model.interface';
-const DATABASE = 'BancoAcelera';
+const DATABASE = 'bancodb';
 
 export default class AccountModel implements AccountModelInterface<Account> {
     constructor(
@@ -14,7 +14,7 @@ export default class AccountModel implements AccountModelInterface<Account> {
         const [result] = await this.connection.execute(
             `INSERT INTO ${DATABASE}.${this.tableName}(
                 cpf_cnpj, name, email, password, balance, status
-            ) VALUES (?, ?, ?, ?, ?);`,
+            ) VALUES (?, ?, ?, ?, ?, ?);`,
             [ cpfCnpj, name, email, password, balance, status ]
         );
         if (result && 'insertId' in result) {
